@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{% static 'marketplace/css/style.css' %}?{% now 'U' %}"
+    />
+    <title>Home | UVA Sustainability Marketplace (Admin)</title>
+  </head>
+  <body>
+    <header class="title">
+      <img src="{% static 'marketplace/images/Marketplace_Logo.png' %}"/>
+      <h1>UVA Sustainability Secondhand Store</h1>
+    </header>
+
+     <div class="layout">
+          <aside>
+               <ul class="navbar">
+                    <li>View Users</li>
+                    <li>View Listings</li>
+                    <li>View Chats</li>
+                    <li>Report History</li>
+                    <li><a href="{% url 'moderator_home' %}">Home</a></li>
+               </ul>
+          </aside>
+     </div>
+
+    <main class="content">{% block content %} {% endblock %}</main>
+  </body>
+</html>

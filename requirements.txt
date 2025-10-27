@@ -1,0 +1,10 @@
+Django
+gunicorn
+django-heroku
+dj-database-url
+django-allauth
+requests
+PyJWT
+cryptography
+python-dotenv
+Pillow

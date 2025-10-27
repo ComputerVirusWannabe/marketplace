@@ -1,0 +1,73 @@
+{% extends "marketplace/base_moderator.html" %}
+{% block content %}
+   <section class="moderator-home">
+    <h2>Moderator Home</h2>
+    
+    <p>Welcome back, <strong>{{ user.username }}</strong>! You have moderator privileges.</p>
+
+    <div class="moderator-section">
+        <h3>My Tasks</h3>
+        <p><em>Placeholder: Task management system will be implemented here</em></p>
+        
+        <ul class="task-list">
+            <li>
+                <strong>Review Pending Content</strong>
+                <p>Check and approve user-submitted listings and content</p>
+            </li>
+            <li>
+                <strong>Manage User Reports</strong>
+                <p>Review flagged items and user complaints</p>
+            </li>
+            <li>
+                <strong>Monitor Marketplace Activity</strong>
+                <p>Track user engagement and site metrics</p>
+            </li>
+            <li>
+                <strong>Update Community Guidelines</strong>
+                <p>Review and modify marketplace policies</p>
+            </li>
+        </ul>
+    </div>
+
+    <div class="moderator-section">
+        <h3>Quick Actions</h3>
+        <p><em>Placeholder: Action buttons will be added here</em></p>
+        <ul>
+            <li>View all pending reports</li>
+            <li>Manage user accounts</li>
+            <li>View analytics dashboard</li>
+            <li>Access moderator tools</li>
+        </ul>
+    </div>
+    <div class="moderator-section">
+        <h3>Moderator Tools</h3>
+        <p><em>Placeholder: Moderator-specific tools will be available here</em></p>
+        
+        <ul>
+            <li>Bulk actions on listings</li>
+            <li>User management dashboard</li>
+            <li>Report templates and workflows</li>
+            <li>Automated moderation settings</li>
+            <li>Content filtering rules</li>
+        </ul>
+    </div>
+
+    <div class="moderator-section">
+        <h3>Recent Activity</h3>
+        <p><em>Placeholder: Live activity feed will appear here</em></p>
+        <p>Recent marketplace activities and moderator actions will be displayed here in real-time.</p>
+    </div>
+
+    <div class="moderator-section">
+        <h3>Statistics Overview</h3>
+        <p><em>Placeholder: Key metrics will be displayed here</em></p>
+        
+        <ul>
+            <li>Total active listings: TBD</li>
+            <li>Pending reviews: TBD</li>
+            <li>Active users today: TBD</li>
+            <li>Reports to review: TBD</li>
+        </ul>
+    </div>
+  </section>
+{% endblock %}

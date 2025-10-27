@@ -1,0 +1,23 @@
+{% extends 'marketplace/base_user.html' %} 
+{% load static %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'marketplace/css/profile.css' %}" />
+{% endblock %} 
+
+{% block content %}
+<section class="profile">
+  <h2>My Profile</h2>
+  <body>
+    <img src="/media/{{image}}" onerror='this.style.display = "none"' />
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %} {% for field in form %}
+      <p>{{ field.errors }} {{ field.label_tag }} {{ field }}</p>
+      {% endfor %}
+      <p>Email: {{email}}</p>
+
+      <p><input type="submit" value="Save Changes" /></p>
+    </form>
+  </body>
+</section>
+{% endblock %}

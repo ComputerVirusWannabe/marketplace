@@ -1,0 +1,49 @@
+.title{
+     display: flex;
+     align-items: flex-start;
+     background-color: #ffffff;
+     padding: 8px;
+}
+
+.title .logo {
+     height: 40px;
+     margin-right: 10px;
+     margin-bottom: 5px;
+}
+
+.title .text {
+     margin-left: 10px;
+     margin-top: 16px;
+}
+
+
+.layout {
+     display: flex;
+}
+
+.navbar {
+     flex-direction: column;
+     display: flex;
+     padding: 16px;
+     background-color: #1793b0;
+     justify-content: space-between;
+     list-style: none;
+     width: 200px;
+
+}
+
+.navbar ul {
+     display: flex;
+     height: 100%;
+}
+
+.navbar li {
+     display: flex;
+     padding: 10px;
+     color: #ffffff;
+}
+
+.content {
+     display: flex;
+}
+
