@@ -22,32 +22,44 @@ load_dotenv(BASE_DIR / '.env')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-8*wfb9)#dvysx=p1ne)h$3v8q(p&*xo@nxx_q&!1!u-im@_d=*"
+# ***** Note: Uncomment the following lines for production with HTTPS ******
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_SSL_REDIRECT = True
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+# Do NOT set debug to True in production!
+DEBUG = False
 
 # ADD HEROKU APP URL HERE
 ALLOWED_HOSTS = ['localhost','127.0.0.1', 'cs-3240-a03-04435f33f31b.herokuapp.com']
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://cs-3240-a03-04435f33f31b.herokuapp.com",
+]
+
 AUTH_USER_MODEL = "marketplace.CustomUser" 
+
+ASGI_APPLICATION = 'project_a03.asgi.application'
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "marketplace",
+    "marketplace.apps.MarketplaceConfig",
     "django.contrib.sites",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -128,10 +140,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+# Local static settings (source vs destination)
+# Keep a real filesystem STATIC_ROOT even when using S3 so Django stays happy
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -155,11 +168,57 @@ SOCIALACCOUNT_PROVIDERS = {
 SOCIALACCOUNT_LOGIN_ON_GET = True 
 
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_ON_GET = True
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# Media files (uploaded images)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# --- Amazon S3 configuration ---
+# Only enable S3-backed storage in production when a bucket is configured
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
+
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+
+if not DEBUG and AWS_STORAGE_BUCKET_NAME:
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_S3_ADDRESSING_STYLE = 'virtual'
+
+    AWS_QUERYSTRING_AUTH = False
+
+    AWS_DEFAULT_ACL = None
+
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+
+    AWS_S3_CUSTOM_DOMAIN = os.getenv(
+        'AWS_S3_CUSTOM_DOMAIN', f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    )
+
+    # Use dedicated S3 locations for static and media
+    STORAGES = {
+        "default": {"BACKEND": 'project_a03.storage_backends.MediaStorage'},
+        "staticfiles": {"BACKEND": 'project_a03.storage_backends.StaticStorage'},
+    }
+
+    # Point URLs to S3
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+else:
+    # Local media when S3 not configured
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    STORAGES = {
+        "default": {"BACKEND": 'django.core.files.storage.FileSystemStorage'},
+        "staticfiles": {"BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+    }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [os.environ.get("REDISCLOUD_URL", "redis://localhost:6379")]
+        }
+    }
+}

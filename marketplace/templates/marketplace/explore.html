@@ -1,4 +1,69 @@
-{% block content %}
-  <section class="explore-page"></section>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Explore Listings | UVA Sustainability Marketplace</title>
+    <link rel="stylesheet" href="{% static 'marketplace/css/base.css' %}">
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #f8f9fa; }
+      .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+      .brand { display: flex; align-items: center; gap: 10px; }
+      .brand img { width: 36px; height: 36px; }
+      .brand h2 { margin: 0; font-size: 22px; }
+      .actions { display: flex; gap: 10px; }
+      .btn { padding: 10px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; color: #fff; display: inline-block; }
+      .btn-primary { background: var(--primary-green); }
+      .btn-secondary { background: var(--secondary-teal); }
+      .search { margin: 10px 0 20px; display: flex; gap: 8px; }
+      .search input { flex: 1; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+      .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
+      .card img { width: 100%; height: 160px; object-fit: cover; }
+      .card .ph { height: 160px; display:flex; align-items:center; justify-content:center; color:#999; background:#eee; }
+      .card .content { padding: 12px; }
+      .card h3 { font-size: 18px; margin: 0 0 6px 0; }
+      .meta { font-size: 14px; color: #555; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">
+          <img src="{% static 'marketplace/images/Marketplace_Logo.png' %}" alt="logo" />
+          <h2>Explore Listings</h2>
+        </div>
+        <div class="actions">
+          <a href="/accounts/google/login/" class="btn btn-primary">Sign in with Google</a>
+          <a href="/" class="btn btn-secondary">Back to Home</a>
+        </div>
+      </div>
 
+      <form class="search" method="get">
+        <input type="search" name="q" placeholder="Search listings..." value="{{ query }}" />
+        <button class="btn btn-secondary" type="submit">Search</button>
+      </form>
+
+      <div class="grid">
+        {% for listing in listings %}
+          <a class="card" href="{% url 'public_listing_detail' listing.id %}">
+            {% if listing.image %}
+              <img src="{{ listing.image.url }}" alt="{{ listing.title }}" />
+            {% else %}
+              <div class="ph">No Image</div>
+            {% endif %}
+            <div class="content">
+              <h3>{{ listing.title }}</h3>
+              <div class="meta">Category: {{ listing.get_category_display }}</div>
+              <div class="meta">Condition: {{ listing.get_condition_display }}</div>
+            </div>
+          </a>
+        {% empty %}
+          <p>No listings yet. Sign in to add one!</p>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+  </html>

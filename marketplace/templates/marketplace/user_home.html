@@ -1,6 +1,75 @@
 {% extends "marketplace/base_user.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'marketplace/css/user_home.css' %}?{% now 'U' %}">
+{% endblock %}
+
 {% block content %}
-  <section class="user-home">
-    <h2>User Home</h2>
-  </section>
+<section class="user-home">
+    <h2>Explore Listings</h2>
+    <form method="GET">
+        <div class="actions-bar">
+            <input type="search" name="q" class="search-container" placeholder="Search listings..." value="{{ query }}">
+
+            <label>Categories:</label>
+            <div class="checkbox-scroll">
+                {% for key, label in category_choices %}
+                <label class="checkbox-item">
+                    <input type="checkbox" name="category" value="{{ key }}" {% if key in selected_categories %}checked{% endif %}>
+                    {{ label }}
+                </label>
+                {% endfor %}
+            </div>
+
+            <label>Conditions:</label>
+            <div class="checkbox-scroll">
+                {% for key, label in condition_choices %}
+                <label class="checkbox-item">
+                    <input type="checkbox" name="condition" value="{{ key }}" {% if key in selected_conditions %}checked{% endif %}>
+                    {{ label }}
+                </label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <div class="actions-bar">
+        <a href="{% url 'add_listing' %}?redirect=user_home" class="btn btn-primary">Create Listing</a>
+    </div>
+    
+    <div class="listings-grid">
+        {% if listings %}
+            {% for listing in listings %}
+                <div class="listing-card">
+                    {% if listing.image %}
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="listing-image">
+                    {% else %}
+                        <div class="listing-image-placeholder">No Image</div>
+                    {% endif %}
+                    
+                    <div class="listing-content">
+                        <h3><a href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a></h3>
+                        <p><strong>Category:</strong> {{ listing.category }}</p>
+                        <p><strong>Condition:</strong> {{ listing.condition }}</p>
+                        <p><strong>Owner:</strong> <a href="{% url 'user_public_profile' listing.owner.id %}">{{ listing.owner.nickname }}</a></p>
+                    {% if listing.owner != user %}
+                        <a href="{% url 'flag_listing' listing.id %}">
+                            {% if user in listing.flagged_by.all %}
+                                <img src="{% static 'marketplace/icons/Flagged-Active.png' %}" alt="Unflag" title="Unflag listing" class="flag">
+                            {% else %}
+                                <img src="{% static 'marketplace/icons/Unflagged-Active.png' %}" alt="Flag" title="Flag listing for moderator review" class="flag" onclick="return confirm('Are you sure you want to flag this listing ({{ listing.title }}) for moderator review?')">
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                    </div>
+                    
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-listings">No listings found.</p>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

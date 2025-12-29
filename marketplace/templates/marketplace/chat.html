@@ -1,0 +1,150 @@
+<!--
+Description: Interactable Chat Page
+Source: Adapted from Django Channels documentation tutorial
+  (channels.readthedocs.io/en/stable/tutorial/part_1.html)
+Notes: Used the Websockets communication and HTML from this tutorial.
+-->
+
+{% extends base_template %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'marketplace/css/chat.css' %}?{% now 'U' %}">
+{% endblock %} 
+
+{% block content %}
+<section>
+  <h2> {{ chat.name }} 
+    {% if not chat.is_custom_chat %}
+    <a href="{% url 'listing_detail' chat.listing.id %}"> View Listing </a>
+    {% endif %}
+  </h2>
+
+  <p>
+    {% if not chat.is_custom_chat %}
+    This is an Item Request Chat. Use this chat to ask more about the item and arrange to pick up the item.
+    {% endif %}
+  </p>
+
+    <!-- Load existing messages  -->
+  <textarea id="chat-log" cols="100" rows="20" readonly>{% for message in messages %}
+{{ message.author.nickname }}: {{ message.content }}{% endfor %}
+</textarea>
+  {% if chat.active %}
+  <div class="message_input_container">
+    <input id="chat-message-input" class="message_input" type="text" size="100">
+    <input id="chat-message-submit" type="submit" class="btn btn-secondary" t zype="button" value="Send">
+  </div>
+  {% endif %}
+
+  {% if not chat.is_custom_chat and chat.active%}
+
+    {% if not chat.created_by == user %}
+      {% if not chat.accepted %} <!-- Accept item request -->
+      <p> Are you sure about giving the item away to this person? Accept the Item Request to close other item request chats for this item and prevent more people from requesting the item. </p>
+        <div style="margin-bottom: 10px;">
+          <form method="POST" action="{% url 'accept_listing_request' chat.listing.id chat.id %}">
+            {% csrf_token %}
+            <button type="submit" onclick="acceptRequest(event)" class="btn btn-primary" >
+                Accept Item Request
+            </button>
+          </form>
+        </div>
+      {% else %} <!-- Finish an accepted item request -->
+        <div style="margin-bottom: 10px;">
+          <p> Finished with the transaction and no longer need to chat? Close the chat to hide it from your My Chats page. </p>
+          <form method="POST" action="{% url 'finish_listing_request' chat.id %}">
+            {% csrf_token %}
+            <button type="finish" onclick="closeChat(event)" class="btn btn-primary" >
+                Close Chat
+            </button>
+          </form>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <div style="margin-bottom: 10px;">
+      <p> No longer interested? Cancel the Item Request to end this chat. </p>
+      <form method="POST" action="{% url 'cancel_listing_request' chat.listing.id chat.id %}">
+        {% csrf_token %}
+        <button type="submit" onclick="cancelRequest(event)" class="btn btn-delete">
+            Cancel Item Request
+        </button>
+      </form>
+    </div>
+  {% endif %}
+
+  <script>
+    const textarea = document.querySelector('#chat-log');
+    textarea.scrollTop = textarea.scrollHeight;
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    const chatSocket = new WebSocket(
+          ws_scheme + '://'
+          + window.location.host
+          + "/ws/chat/{{ chat.id }}/"
+    );
+
+    chatSocket.onmessage = function(e) {
+          textarea.scrollTop = textarea.scrollHeight;
+          const data = JSON.parse(e.data);
+          textarea.value += (data.user_display_name + ': ' + data.message + '\n');
+    };
+
+    chatSocket.onclose = function(e) {
+          console.error(e);
+      };
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.key === 'Enter') {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        if (message != '') {
+          chatSocket.send(JSON.stringify({
+            'message': message,
+            'user_id': '{{ user.id }}',
+          }));
+          messageInputDom.value = '';
+        }
+    };
+
+   function acceptRequest(e) {
+      if (!confirm('Are you sure you want to accept this item request? This will close other item request chats for this item and prevent new requests.')) {
+        e.preventDefault();  
+        return;
+      }
+      chatSocket.send(JSON.stringify({
+            'message': "** Item Request Accepted **",
+            'user_id': '{{ user.id }}',
+      }));
+   }
+
+   function cancelRequest(e) {
+      if (!confirm('Are you sure you want to cancel this item request? This will close the chat.')) {
+        e.preventDefault();  
+        return;
+      }
+      chatSocket.send(JSON.stringify({
+            'message': "** The item request was canceled. Please exit the chat. **",
+            'user_id': '{{ user.id }}',
+      }));
+   }
+
+   function closeChat(e) {
+      if (!confirm('Are you sure you want to close the chat? You will not be able to return.')) {
+        e.preventDefault();  
+        return;
+      }
+      chatSocket.send(JSON.stringify({
+            'message': "** The chat was closed. Please exit the chat. **",
+            'user_id': '{{ user.id }}',
+      }));
+   }
+  </script>
+</section>
+{% endblock %}

@@ -1,0 +1,91 @@
+.container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 0;
+}
+
+.title .logo {
+    height: 50px;
+    width: auto;
+    margin-right: 15px;
+}
+
+.title .text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.layout {
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(100vh - 90px);
+}
+
+aside.navbar {
+    background-color: #17a2b8;
+    width: 240px;
+    min-width: 240px;
+    margin: 0;
+    padding: 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar ul li {
+    display: block;
+    margin: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.navbar ul li a {
+    display: block;
+    padding: 16px 24px;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-weight: 500;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.navbar ul li a:hover {
+    background-color: rgba(255,255,255,0.1);
+    padding-left: 28px;
+}
+
+.content {
+    flex: 1;
+    padding: 30px;
+    background-color: #ffffff;
+}
+
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.checkbox-and-image {
+    position: relative;
+}
+
+.checkbox-and-image input[type="checkbox"] {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}

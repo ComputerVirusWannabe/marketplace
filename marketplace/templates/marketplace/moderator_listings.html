@@ -1,0 +1,100 @@
+{% extends 'marketplace/base_moderator.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'marketplace/css/user_home.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2>All Listings</h2> 
+<div class="actions-bar">
+    {% if showing_flagged %}
+          <a href="{% url 'moderator_listings' %}" class="show-all-button">Show All Listings</a>
+      {% else %}
+          <a href="{% url 'moderator_listings' %}?flagged=1" class="show-flagged-button">Show Flagged Listings</a>
+    {% endif %}
+    <form method="GET" class="search-container">
+      <input
+        type="search"
+        name="q"
+        placeholder="Search listings..."
+        value="{{ query }}"
+      />
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </div>
+
+  <form method="POST" action="{% url 'delete_selected' %}">
+    {% csrf_token %}
+    <div class="actions-bar">
+      <a href="{% url 'add_listing'%}?redirect=moderator_listings" class="btn btn-primary">Create Listing</a>
+      <button type="submit" class="btn btn-delete">Delete Selected</button>
+    </div>
+  <div class="listings-grid">
+      {% for listing in listings %}
+
+      <div class="listing-card">
+        <div class="checkbox-and-image">
+          <input
+            type="checkbox"
+            name="selected_listings"
+            value="{{ listing.id }}"
+          />
+
+          {% if listing.image %}
+          <a href="{% url 'listing_detail' listing.id %}">
+            <img
+              class="listing-image"
+              src="{{ listing.image.url }}"
+              alt="{{ listing.title }}"
+            />
+          </a>
+          {% else %}
+          <div class="listing-image-placeholder">No Image</div>
+          {% endif %}
+        </div>
+
+        <div class="listing-content">
+          <h3>
+            <a href="{% url 'listing_detail' listing.id %}"
+              >{{ listing.title }}</a
+            >
+          </h3>
+          <p><strong>Category:</strong> {{ listing.get_category_display }}</p>
+          <p><strong>Condition:</strong> {{ listing.get_condition_display }}</p>
+          <p>
+            <strong>Owner:</strong> <a href="{% url 'user_public_profile' listing.owner.id %}">{{ listing.owner.nickname }}</a>
+          </p>
+
+          <a href="{% url 'moderator_flag_listing' listing.id %}">
+            {% if listing.flagged_by.count > 0 %}
+                <img src="{% static 'marketplace/icons/Flagged-Active.png' %}" alt="Unflag" title="Unflag listing" class="flag">
+            {% else %}
+                <img src="{% static 'marketplace/icons/Unflagged-Active.png' %}" alt="Flag" title="Flag listing for moderator review" class="flag">
+            {% endif %}
+          </a>
+
+          <div class="listing-actions">
+            <a
+              href="{% url 'edit_listing' listing.id %}"
+              class="btn btn-secondary"
+              >Edit</a
+            >
+            <a
+              href="{% url 'delete_listing' listing.id %}"
+              class="btn btn-delete"
+              >Delete</a
+            >
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="no-listings">
+        You have not created any listings or there is no matched listing based
+        on your search.
+      </p>
+      {% endfor %}
+  </div>
+
+</form>
+{% endblock %}

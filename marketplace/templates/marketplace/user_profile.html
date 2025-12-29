@@ -1,23 +1,119 @@
-{% extends 'marketplace/base_user.html' %} 
-{% load static %} 
+{% extends base_template %}
+{% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'marketplace/css/profile.css' %}" />
-{% endblock %} 
+<link rel="stylesheet" href="{% static 'marketplace/css/user_public_profile.css' %}" />
+{% endblock %}
 
 {% block content %}
 <section class="profile">
-  <h2>My Profile</h2>
-  <body>
-    <img src="/media/{{image}}" onerror='this.style.display = "none"' />
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %} {% for field in form %}
-      <p>{{ field.errors }} {{ field.label_tag }} {{ field }}</p>
-      {% endfor %}
-      <p>Email: {{email}}</p>
+  <h2>
+    My Profile 
+    <a href="{% url 'user_public_profile' request.user.id %}">
+      View public profile
+    </a>
+  </h2>
 
-      <p><input type="submit" value="Save Changes" /></p>
-    </form>
-  </body>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Profile Image at the Top -->
+    <div class="profile-image-wrapper" id="image-view">
+      {% if user.image %}
+          <img src="{{ user.image.url }}" class="profile-image">
+      {% else %}
+          <img class="profile-image"> <!-- blank -->
+      {% endif %}
+      <button type="button" class="btn btn-secondary btn-sm" id="edit-image">Edit</button>
+    </div>
+
+    <div class="image-edit" id="image-edit" style="display:none;">
+      {{ form.image }}
+      <button type="button" class="btn btn-secondary btn-sm" id="cancel-image">Cancel</button>
+    </div>
+
+    <!-- Uneditable fields -->
+    <p><strong>Name:</strong> {{ first_name }} {{ last_name }} (not shown to others)</p>
+    <p><strong>Email:</strong> {{ email }}</p>
+
+    <!-- Other profile fields -->
+    <p><strong>{{ form.nickname.label_tag }}</strong> {{ form.nickname }}</p>
+    <p><strong>{{ form.biography.label_tag }}</strong> {{ form.biography }}</p>
+
+    <!-- Giving Away -->
+    <p><strong>Giving Away:</strong></p>
+    <div class="category-view" id="giving-away-view">
+        {% if user.giving_away.all %}
+            {{ user.giving_away.all|join:", " }}
+        {% else %}
+            None
+        {% endif %}
+        <button type="button" class="btn btn-secondary btn-sm" id="edit-giving-away">Edit</button>
+    </div>
+    <div class="category-edit" id="giving-away-edit" style="display:none;">
+        {{ form.giving_away }}
+        <button type="button" class="btn btn-secondary btn-sm" id="cancel-giving-away">Cancel</button>
+    </div>
+
+    <!-- Looking For -->
+    <p><strong>Looking For:</strong></p>
+    <div class="category-view" id="looking-for-view">
+        {% if user.looking_for.all %}
+            {{ user.looking_for.all|join:", " }}
+        {% else %}
+            None
+        {% endif %}
+        <button type="button" class="btn btn-secondary btn-sm" id="edit-looking-for">Edit</button>
+    </div>
+    <div class="category-edit" id="looking-for-edit" style="display:none;">
+        {{ form.looking_for }}
+        <button type="button" class="btn btn-secondary btn-sm" id="cancel-looking-for">Cancel</button>
+    </div>
+
+    <div class="footer">
+        <!-- Save Changes button saves everything, including profile image -->
+        <p><input type="submit" class="btn btn-primary" value="Save Changes" /></p>
+        <a href="{% url 'delete_account' %}" class="btn btn-delete">Delete Account</a>
+    </div>
+  </form>
 </section>
+
+<script>
+  // Profile Image toggle
+  const imageView = document.getElementById('image-view');
+  const imageEditDiv = document.getElementById('image-edit');
+
+  document.getElementById('edit-image').onclick = () => {
+      imageView.style.display = 'none';
+      imageEditDiv.style.display = 'block';
+  };
+  document.getElementById('cancel-image').onclick = () => {
+      imageEditDiv.style.display = 'none';
+      imageView.style.display = 'block';
+  };
+
+  // Giving Away toggle
+  const givingView = document.getElementById('giving-away-view');
+  const givingEdit = document.getElementById('giving-away-edit');
+  document.getElementById('edit-giving-away').onclick = () => {
+      givingView.style.display = 'none';
+      givingEdit.style.display = 'block';
+  };
+  document.getElementById('cancel-giving-away').onclick = () => {
+      givingEdit.style.display = 'none';
+      givingView.style.display = 'block';
+  };
+
+  // Looking For toggle
+  const lookingView = document.getElementById('looking-for-view');
+  const lookingEdit = document.getElementById('looking-for-edit');
+  document.getElementById('edit-looking-for').onclick = () => {
+      lookingView.style.display = 'none';
+      lookingEdit.style.display = 'block';
+  };
+  document.getElementById('cancel-looking-for').onclick = () => {
+      lookingEdit.style.display = 'none';
+      lookingView.style.display = 'block';
+  };
+</script>
 {% endblock %}

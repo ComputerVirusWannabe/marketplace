@@ -1,0 +1,130 @@
+{% extends 'marketplace/base_user.html' %}
+
+{% block extra_css %}
+<style>
+    .content {
+        padding: 30px !important;
+    }
+
+    .user-home {
+        max-width: 1200px;
+        margin: 0;
+    }
+    
+    .notification {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .notification p {
+        flex: 1;
+        margin: 0;
+        padding-right: 15px;
+    }
+
+    .notification small {
+        white-space: nowrap;
+        color: #666;
+        font-size: 13px;
+        margin-right: 10px;
+    }
+
+    .notification .btn {
+        padding: 6px 16px;
+        font-size: 13px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .notification.new {
+        border-left: 4px solid #28a745;
+        background: #f0fff4;
+    }
+
+    .notification.seen {
+        border-left: 4px solid #ccc;
+        background: #fafafa;
+    }
+
+    .user-home h2 {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 3px solid #17a2b8;
+    }
+
+    .user-home h3 {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 20px;
+        color: #333;
+    }
+
+    .badge-new {
+        background: #28a745;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="user-home">
+    <h2>
+        Your Notifications
+        {% if new_count > 0 %}
+            <span class="badge-new">{{ new_count }} New</span>
+        {% endif %}
+    </h2>
+
+    {% if new_notifications %}
+        <h3>New</h3>
+        {% for notification in new_notifications %}
+            <div class="notification new">
+                <p>{{ notification.message }}</p>
+                <small>{{ notification.created_at|timesince }} ago</small>
+                {% if notification.type == 'custom_chat_invite' or notification.type == 'new_message' %}
+                    <a href="{% url 'chat' notification.related_id %}" class="btn btn-secondary">View Chat</a>
+                {% elif notification.type == 'item_request' %}
+                    <a href="{% url 'chat' notification.related_id %}" class="btn btn-secondary">View Request</a>
+                {% elif notification.related_id %}
+                    <a href="{% url 'listing_detail' notification.related_id %}" class="btn btn-secondary">View Listing</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No new notifications</p>
+    {% endif %}
+
+    <h3>Seen (Last 20)</h3>
+    {% if seen_notifications %}
+        {% for notification in seen_notifications %}
+            <div class="notification seen">
+                <p>{{ notification.message }}</p>
+                <small>{{ notification.created_at|timesince }} ago</small>
+                {% if notification.type == 'custom_chat_invite' or notification.type == 'new_message' %}
+                    <a href="{% url 'chat' notification.related_id %}" class="btn btn-secondary">View Chat</a>
+                {% elif notification.type == 'item_request' %}
+                    <a href="{% url 'chat' notification.related_id %}" class="btn btn-secondary">View Request</a>
+                {% elif notification.related_id %}
+                    <a href="{% url 'listing_detail' notification.related_id %}" class="btn btn-secondary">View Listing</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No previous notifications</p>
+    {% endif %}
+</div>
+{% endblock %}

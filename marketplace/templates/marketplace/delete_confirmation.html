@@ -1,0 +1,16 @@
+{% extends base_template %}
+{% load static %} 
+
+{% block content %}
+<section class="delete-listing">
+     <h2>Delete Listing</h2>
+     <p>You are about to delete "{{ listing.title }}". This action cannot be undone.</p>
+     <p>Are you sure you want to delete the listing?</p>
+
+     <form method="POST">
+          {% csrf_token %}
+          <button type="submit" class = "btn btn-delete">Yes</button>
+          <a href="#" onclick="history.back(); return false;">Cancel</a>
+     </form>
+</section>
+{% endblock %}

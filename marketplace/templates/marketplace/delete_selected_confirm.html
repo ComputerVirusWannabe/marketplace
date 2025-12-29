@@ -1,0 +1,30 @@
+{% extends base %}
+{% load static %} 
+
+{% block content %}
+<section class="delete-listing">
+     <h2>Delete Listing</h2>
+     <p>You are about to delete the following listing(s). This action cannot be undone.</p>
+
+     <ul style="padding-left: 4em; padding-top: 1em; padding-bottom: 1em;">
+          {% for listing in listings %}
+          <li> {{listing.title }} </li>
+          {% endfor %}
+     </ul>
+
+     <p>Are you sure you want to delete the listing(s)?</p>
+
+     <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="confirm" value="1">
+
+          {% for listing in listings %}
+          <input type="hidden" name="selected_listings" value="{{ listing.id }}">
+          {% endfor %}
+
+          <button type="submit" class = "btn-delete">Delete</button>
+          <a href="{% url 'my_listings' %}">Cancel</a>
+
+     </form>
+</section>
+{% endblock %}

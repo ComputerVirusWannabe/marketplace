@@ -1,11 +1,188 @@
-{% block content %}
-  <section class="home-hero">
-    <h1>Welcome</h1>
-    <p class="subtitle">Share and lend used items at UVA to promote sustainability on Grounds!</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to UVA Marketplace</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <div class="actions row center">
-      <a class="btn" href="/accounts/google/login/">Sign in with Google</a>
-      <a class="btn" href="{% url 'explore' %}">Explore</a>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #ffffff); 
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero-header {
+            background: #ffffff; 
+            padding: 100px 20px 80px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+            border-bottom: 5px solid #17a2b8; 
+        }
+
+        .hero-logo-container {
+            margin-bottom: 25px;
+        }
+
+        .hero-logo {
+            width: 80px; 
+            height: auto;
+        }
+
+        .hero-title {
+            font-size: 44px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary { 
+            background-color: #4CAF50; 
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: #3e8e41;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary { 
+            background-color: #17a2b8;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background-color: #117a8b;
+            transform: translateY(-1px);
+        }
+
+        .landing-pitch-section {
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+
+        .section-heading {
+            text-align: center;
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card-pitch {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-top: 5px solid #17a2b8; 
+            transition: transform 0.2s;
+        }
+
+        .card-pitch:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .card-pitch h3 {
+            color: #17a2b8;
+            margin-bottom: 10px;
+        }
+
+        .card-pitch p {
+            color: #666;
+        }
+    </style>
+    </head>
+<body>
+
+<header class="hero-header">
+    <div class="hero-logo-container">
+        <img src="{% static 'marketplace/images/Marketplace_Logo.png' %}" alt="Marketplace Logo" class="hero-logo">
     </div>
-  </section>
-{% endblock %}
+    <h1 class="hero-title">Welcome to the UVA Sustainability Secondhand Store</h1>
+    <p class="hero-subtitle">Give away used items at UVA to promote sustainability on Grounds!</p>
+    <div class="hero-actions">
+        <a href="/accounts/google/login/" class="btn btn-primary">Sign in with Google</a>
+        <a href="{% url 'explore' %}" class="btn btn-secondary">Explore Listings →</a>
+    </div>
+    {% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages|slice:":1" %}
+                <strong>{{ message.author.nickname}}</strong>  {{ message.content }}
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endblock content %}
+</header>
+
+<div class="container landing-pitch-section">
+    <div class="cards-grid">
+        <div class="card card-pitch">
+            <h3>Reduce, Reuse, and Recycle</h3>
+            <p>Help reduce waste by keeping items in circulation within the UVA community.</p>
+        </div>
+        <div class="card card-pitch">
+            <h3>Get What You Want, for Free</h3>
+            <p>From furniture and decor to electronics and clothing, browse all the items fellow students are giving away.</p>
+        </div>
+        <div class="card card-pitch">
+            <h3>Community of Cavaliers</h3>
+            <p>Connect with other UVA students on Grounds for safe and easy item pickup and exchange.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

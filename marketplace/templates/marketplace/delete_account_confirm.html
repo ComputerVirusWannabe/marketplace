@@ -1,0 +1,20 @@
+{% extends base_template %}
+{% load static %} 
+
+{% block content %}
+<section>
+     <h2>Delete Account</h2>
+     <p>You are about to delete your account. <strong>This action cannot be undone</strong> and <strong>your data cannot be retrieved or restored.</strong></p>
+     <p>Are you sure you want to delete your account?</p>
+
+     <form method="POST">
+          {% csrf_token %}
+          <button 
+          type="submit" 
+          class = "btn btn-delete"
+          onclick="return confirm('Are you sure you want to delete your account?');"
+          >Delete Account</button>
+          <a href="#" onclick="history.back(); return false;">Cancel</a>
+     </form>
+</section>
+{% endblock %}

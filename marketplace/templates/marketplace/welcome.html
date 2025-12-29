@@ -1,0 +1,114 @@
+{% extends 'marketplace/base_user.html' %} {% load static %} {% block content %}
+<section class="welcome">
+  <style>
+    .welcome .rules-intro {
+      font-weight: 700;
+      margin: 0 0 8px 0;
+    }
+    .welcome .rules-list {
+      margin: 0 0 16px 0;
+      padding-left: 1.25rem;
+    }
+    .welcome .section-divider {
+      margin: 20px 0 24px;
+    }
+    .welcome .field {
+      margin-top: 8px;
+    }
+    .welcome .checkbox-group {
+      margin-top: 12px;
+    }
+    .welcome .checkbox-group .group-title {
+      font-weight: 700;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .welcome .between-checkboxes {
+      margin-top: 16px;
+    }
+    .welcome .profile-pic-group {
+      margin-top: 16px;
+    }
+    .welcome .btn-row {
+      margin-top: 12px;
+      margin-bottom: 20px;
+    }
+  </style>
+  <h2>Welcome to the UVA Sustainability Store!</h2>
+  <p class="rules-intro">To keep our community safe, here are a few rules:</p>
+  <ol class="rules-list">
+    <li>Be respectful, honest and inclusive in all interactions.</li>
+    <li>Coordinate meetups in safe, public locations.</li>
+    <li>
+      Accurately describe items you are giving away, including their condition.
+    </li>
+    <li>
+      Clean items before giving them away (wash clothes, reset electronics,
+      etc).
+    </li>
+  </ol>
+  <hr class="section-divider" />
+
+  <h3>First, set up your profile:</h3>
+  <form method="post" enctype="multipart/form-data" class="welcome-form">
+    {% csrf_token %}
+    <div class="field">
+      Name: {{ first_name }} {{last_name}} (not shown to others)
+    </div>
+    <div class="field">
+      <label for="id_nickname">Nickname (displayed to others)</label><br />
+      {{ form.nickname }}
+    </div>
+    <div class="field">
+      <label for="id_biography">Bio</label><br />
+      {{ form.biography }}
+    </div>
+    <div class="checkbox-group">
+      <label class="group-title" for="id_giving_away">Giving away:</label>
+      {{ form.giving_away }}
+    </div>
+    <div class="checkbox-group between-checkboxes">
+      <label class="group-title" for="id_looking_for">Looking for:</label>
+      {{ form.looking_for }}
+    </div>
+    <div class="field profile-pic-group">
+      <label for="id_image">Profile picture</label><br />
+      {{ form.image }}
+    </div>
+    <div class="btn-row">
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+
+  <hr class="section-divider" />
+
+  <div class="welcome-actions">
+    <h3>What would you like to do next?</h3>
+    <p>
+      <strong>Are you interested in giving away items?</strong><br />
+      Create an item listing and wait for anyone interested in picking it up.
+      You will receive a notification and you will be able to chat with the
+      interested person to discuss when and where the item will be picked up.
+    </p>
+    <p>
+      <a
+        class="btn btn-secondary"
+        href="{% url 'add_listing' %}?redirect=user_home"
+        >Create an item listing now</a
+      >
+    </p>
+    <p>
+      <strong>Are you interested in picking up items?</strong><br />
+      Click on an item listing on the Explore page to read the details of the
+      listing and press the Request Item button. It will bring you into a chat
+      with the owner of the listing, where you can discuss when and where to
+      pickup the item.
+    </p>
+    <p>
+      <a class="btn btn-secondary" href="{% url 'user_home' %}"
+        >Browse listings now</a
+      >
+    </p>
+  </div>
+</section>
+{% endblock %}

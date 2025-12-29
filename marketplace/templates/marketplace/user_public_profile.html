@@ -1,0 +1,84 @@
+{% extends base_template %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'marketplace/css/user_public_profile.css' %}?{% now 'U' %}">
+    <link rel="stylesheet" href="{% static 'marketplace/css/user_home.css' %}?{% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="profile-header-container"> 
+        
+        <div class="profile-image-wrapper">
+            {% if profile_user.image %}
+                <img src="{{ profile_user.image.url }}" alt="{{ profile_user.nickname }}" class="profile-image">
+            {% else %}
+                <div class="profile-image profile-initial-placeholder">
+                    {{ profile_user.nickname|slice:":1"|upper }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-info">
+            <h1>{{ profile_user.nickname }}</h1>
+        </div>
+    </div>
+
+    <div class="profile-header-container">
+        <div class="profile-info">
+            <h1>Biography</h1>
+            {{ profile_user.biography }}
+        </div>
+    </div>
+
+    <div class="profile-header-container">
+        <div class="profile-info">
+            <h1>Looking for...</h1>
+            {% if profile_user.looking_for.all %}
+                {{ profile_user.looking_for.all|join:", " }}
+            {% else %}
+                Nothing
+            {% endif %}
+            <h1>Giving away...</h1>
+            {% if profile_user.giving_away.all %}
+                {{ profile_user.giving_away.all|join:", " }}
+            {% else %}
+                Nothing
+            {% endif %}
+        </div>
+    </div>
+
+    <h2 class="section-title">{{ profile_user.nickname }}'s Listings ({{ listings.count }})</h2>
+
+    <div class="listings-grid">
+        {% if listings %}
+            {% for listing in listings %}
+                <div class="listing-card">
+                    {% if listing.image %}
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="listing-image">
+                    {% else %}
+                        <div class="listing-image-placeholder">No Image</div>
+                    {% endif %}
+                    
+                    <div class="listing-content">
+                        <h3><a href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a></h3>
+                        <p><strong>Category:</strong> {{ listing.category }}</p>
+                        <p><strong>Condition:</strong> {{ listing.condition }}</p>
+                        {% if listing.owner != user %}
+                            <a href="{% url 'flag_listing' listing.id %}">
+                                {% if user in listing.flagged_by.all %}
+                                    <img src="{% static 'marketplace/icons/Flagged-Active.png' %}" alt="Unflag" title="Unflag listing" class="flag">
+                                {% else %}
+                                    <img src="{% static 'marketplace/icons/Unflagged-Active.png' %}" alt="Flag" title="Flag listing for moderator review" class="flag">
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-listings">No listings found.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

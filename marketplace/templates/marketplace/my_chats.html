@@ -1,0 +1,126 @@
+<!--
+Description: Page with three tabs for Requests By Me/Requests For Me/Custom Chats
+Source: Adapted from W3schools tutorial "HOW TO - Tabs"
+  (www.w3schools.com/howto/howto_js_tabs.asp)
+Notes: Used the HTML, Javascript, and CSS from the tutorial to create clickable tabs.
+-->
+
+{% extends 'marketplace/base_user.html' %}
+{% load static %}
+{% load get_item %}
+{% load access %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'marketplace/css/my_chats.css' %}">
+<link rel="stylesheet" href="{% static 'marketplace/css/chat.css' %}?{% now 'U' %}">
+{% endblock %}
+
+{% block content %}
+<section>
+  <h2>My Chats</h2>
+  <body>
+    <!-- Tab links -->
+    <div class="tab">
+      <button class="tablinks" onclick="openTab(event, 'Requests By Me')" id="defaultOpen">Requests By Me</button>
+      <button class="tablinks" onclick="openTab(event, 'Requests For Me')">Requests For Me</button>
+      <button class="tablinks" onclick="openTab(event, 'Custom Chats')">Custom Chats</button>
+    </div>
+
+
+    <!-- Tab content -->
+    <div id="Requests By Me" class="tabcontent">
+      <h3>Requests By Me</h3>
+      {% for chat in chats_by_me %}
+      <p class="chatbox">
+          <a href="{% url 'chat' chat.id %}">{{ chat.name }}</a> | 
+          <a href="{% url 'listing_detail' chat.listing.id %}">View listing</a> |
+          {% for user in other_user_map|get_item:chat.id %}
+            Listing owner: <a href="{% url 'user_public_profile' user.id  %}"> {{ user.nickname }} </a>
+          {% endfor %} 
+          {% if chat.accepted %}
+            | <strong style="color: green;">Accepted</strong>
+          {% endif %}
+        </p>
+      {% empty %}
+        <p>No chats yet! You have not requested any listings yet.</p>
+      {% endfor %}
+    </div>
+
+    <div id="Requests For Me" class="tabcontent">
+      <h3>Requests For Me</h3>
+      {% for chat in chats_not_by_me %}
+        <p class="chatbox">
+          <a href="{% url 'chat' chat.id %}">{{ chat.name }}</a> | 
+          <a href="{% url 'listing_detail' chat.listing.id %}">View your listing</a> | 
+          {% for user in other_user_map|get_item:chat.id %}
+            Request by: <a href="{% url 'user_public_profile' user.id  %}"> {{ user.nickname }} </a>
+          {% endfor %}
+          {% if chat.accepted %}
+            | <strong style="color: green;">Accepted</strong>
+          {% endif %}
+        </p>
+      {% empty %}
+        <p>No chats yet! No one has requested your listings yet.</p>
+      {% endfor %}
+    </div>
+
+    <div id="Custom Chats" class="tabcontent">
+      <h3>Custom Chats</h3>
+      <p> Custom Chats are not for requesting items, and you can make a new chat with whoever you want!</p>
+
+      <form method="POST" action="{% url 'create_custom_chat' %}">
+        {% csrf_token %}
+        <div class="custom-chat-bar">
+          <div>
+            <p> <strong>Select users to chat with (hold SHIFT to select multiple users, CTRL+CLICK to unselect):</strong></p>
+            <select required name="selected_user_ids" multiple>
+              {% for user in users %}
+                <option value="{{ user.id }}">{{ user.nickname }}</option>
+              {% endfor %}
+            </select>
+            <div class="message_input_container">
+            <input required name="chat-name-input" class="message_input" type="text" size="100" placeholder="Enter the chat name">
+            <button type="submit" class="btn btn-primary">Create Chat</button>
+            </div>
+          </div>
+        </div>
+      </form>
+      {% for chat in custom_chats %}
+        <p class="chatbox">
+          <a href="{% url 'chat' chat.id %}">{{ chat.name }}</a> | 
+          Chatting with 
+          {% for user in other_user_map|get_item:chat.id %}
+          <a href="{% url 'user_public_profile' user.id  %}"> {{ user.nickname }} </a>
+          {% endfor %}
+      {% endfor %}
+    </div>
+  </body>
+
+  <script>
+    function openTab(evt, tabName) {
+      // Declare all variables
+      var i, tabcontent, tablinks;
+
+      // Get all elements with class="tabcontent" and hide them
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+
+      // Get all elements with class="tablinks" and remove the class "active"
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+
+      // Show the current tab, and add an "active" class to the button that opened the tab
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    } 
+
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+  </script>
+</section>
+{% endblock %}
+

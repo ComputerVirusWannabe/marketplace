@@ -1,0 +1,22 @@
+{% extends base_template %}
+{% load static %} 
+
+{% block extra_css %}
+{% endblock %} 
+
+{% block content %}
+<section class="edit-listing">
+     <h2>Edit Listing</h2>
+     <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <p><input type="submit" class="btn btn-primary" value="Save Changes" /></p>
+          
+          {% if is_moderator %}
+               <a href="{% url 'moderator_listings' %}">Cancel</a>
+          {% else %}
+               <a href="{% url 'my_listings' %}">Cancel</a>
+          {% endif %}
+     </form>
+</section>
+{% endblock %}

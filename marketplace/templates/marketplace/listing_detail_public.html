@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ listing.title }} | UVA Marketplace</title>
+    <link rel="stylesheet" href="{% static 'marketplace/css/base.css' %}">
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background:#f8f9fa; }
+      .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+      .topbar { display:flex; justify-content: space-between; align-items:center; margin-bottom:16px; }
+      .btn { padding: 10px 16px; border-radius: 6px; font-weight: 600; text-decoration:none; color:#fff; display:inline-block; }
+      .btn-primary { background: var(--primary-green); }
+      .btn-secondary { background: var(--secondary-teal); }
+      .card { background:#fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); overflow:hidden; }
+      .media { width:100%; height: 340px; object-fit:cover; background:#eee; display:block; }
+      .content { padding: 16px 18px; }
+      h2 { margin: 0 0 8px 0; }
+      .meta { color:#555; font-size:14px; margin-bottom:8px; }
+      .note { margin-top: 12px; font-size: 14px; color: #666; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a href="{% url 'explore' %}" class="btn btn-secondary">← Back to Explore</a>
+        <a href="/accounts/google/login/" class="btn btn-primary">Sign in with Google</a>
+      </div>
+
+      <div class="card">
+        {% if listing.image %}
+          <img class="media" src="{{ listing.image.url }}" alt="{{ listing.title }}">
+        {% else %}
+          <div class="media" style="display:flex;align-items:center;justify-content:center;color:#999;">No Image</div>
+        {% endif %}
+        <div class="content">
+          <h2>{{ listing.title }}</h2>
+          <p>{{ listing.description }}</p>
+          <div class="meta">Category: {{ listing.get_category_display }}</div>
+          <div class="meta">Condition: {{ listing.get_condition_display }}</div>
+          <div class="meta">Last Updated: {{ listing.last_updated|date:"M d, Y H:i" }}</div>
+          <p class="note">Want to request this item or message the owner? Sign in to continue.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>
+
