@@ -30,7 +30,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Do NOT set debug to True in production!
- DEBUG = False
+DEBUG = False
 # DEBUG = os.getenv("DEBUG") == "True"
 
 # ADD HEROKU APP URL HERE
