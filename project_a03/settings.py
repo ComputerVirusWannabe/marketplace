@@ -30,10 +30,11 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Do NOT set debug to True in production!
-DEBUG = False
+# DEBUG = False
+DEBUG = os.getenv("DEBUG") == "True"
 
 # ADD HEROKU APP URL HERE
-ALLOWED_HOSTS = ['localhost','127.0.0.1', 'cs-3240-a03-04435f33f31b.herokuapp.com']
+ALLOWED_HOSTS = ['localhost','127.0.0.1', 'cs-3240-a03-04435f33f31b.herokuapp.com', 'https://marketplace-5ask.onrender.com/']
 
 CSRF_TRUSTED_ORIGINS = [
     "https://cs-3240-a03-04435f33f31b.herokuapp.com",
