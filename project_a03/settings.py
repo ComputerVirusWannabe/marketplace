@@ -193,13 +193,12 @@ AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 
 if not DEBUG and AWS_STORAGE_BUCKET_NAME:
+    # S3 configuration
     AWS_S3_SIGNATURE_VERSION = 's3v4'
     AWS_S3_ADDRESSING_STYLE = 'virtual'
 
     AWS_QUERYSTRING_AUTH = False
-
     AWS_DEFAULT_ACL = None
-
     AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
     AWS_S3_CUSTOM_DOMAIN = os.getenv(
@@ -215,14 +214,16 @@ if not DEBUG and AWS_STORAGE_BUCKET_NAME:
     # Point URLs to S3
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+
 else:
-    # Local media when S3 not configured
+    # Local/Render static & media when S3 not configured
     MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    STORAGES = {
-        "default": {"BACKEND": 'django.core.files.storage.FileSystemStorage'},
-        "staticfiles": {"BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'},
-    }
+    MEDIA_ROOT = BASE_DIR / 'media'
+
+    # WhiteNoise handles static files on Render
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATIC_URL = '/static/'
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 CHANNEL_LAYERS = {
     'default': {
